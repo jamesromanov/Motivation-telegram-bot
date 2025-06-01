@@ -25,9 +25,11 @@ export class QuoteHandler {
     private readonly reactionsService: LikesService,
     private readonly scheduleService: SchedulerService,
   ) {}
+  private chatId: number;
 
   @Hears('📈Top Motivatsiyalar')
   async showTopMotivations(@Ctx() ctx: MyContext) {
+    this.chatId = ctx.chat?.id as number;
     const topQuotes = await this.quoteService.topQuotes();
     let quotes = '';
     let count = 1;
@@ -43,14 +45,10 @@ export class QuoteHandler {
     );
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_9AM)
+  @Cron(CronExpression.EVERY_DAY_AT_9PM)
   async scheduleMsg() {
     const randomQuote = await this.quoteService.findRandomQuote();
-    if (!randomQuote)
-      return this.bot.api.sendMessage(
-        +((await this.redis.get('chatId')) as string),
-        'Xatolik yuz berdi qayta urining!',
-      );
+
     const reactions = await this.reactionsService.findById(randomQuote.id);
     await this.schedule(
       `"<i>${randomQuote.text}</i>"\n\n Edited by: <b>Telegram Bot</b>`,
@@ -173,9 +171,11 @@ export class QuoteHandler {
   ) {
     const { message: msg, inline: inlineKeys } =
       await this.scheduleService.handleCron(message, inline);
-
-    const chatId = +((await this.redis.get('chatId')) as string);
-    return await this.bot.api.sendMessage(chatId, msg, inlineKeys);
+    const ids = JSON.parse((await this.redis.get('ids')) as string);
+    console.log(ids);
+    for (const i of ids) {
+      await this.bot.api.sendMessage(i, msg, inlineKeys);
+    }
   }
 
   isAdmin(ctx: MyContext) {

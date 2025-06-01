@@ -14,7 +14,14 @@ export class StartHandler {
 
   @Start()
   async startBot(@Ctx() ctx: MyContext) {
-    await this.redis.set('chatId', ctx.chat?.id);
+    let id: number[] = JSON.parse((await this.redis.get('ids')) as string);
+
+    if (id) {
+      await this.redis.set('ids', id.concat(Number(ctx.from?.id)));
+    } else {
+      await this.redis.set('ids', [ctx.from?.id]);
+    }
+
     const chatId = ctx.from?.id.toString();
     if (chatId) await this.userService.create({ chatId });
 
