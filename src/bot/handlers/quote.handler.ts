@@ -43,7 +43,7 @@ export class QuoteHandler {
     );
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_9AM)
+  @Cron(CronExpression.EVERY_30_SECONDS)
   async scheduleMsg() {
     const randomQuote = await this.quoteService.findRandomQuote();
     if (!randomQuote)
@@ -107,6 +107,8 @@ export class QuoteHandler {
   }
   @Command('adminGet')
   async getQuotes(@Ctx() ctx: MyContext) {
+    const isAdmin = this.isAdmin(ctx);
+    if (!isAdmin) return ctx.reply('Sizni bunga huquqingiz yoq!');
     const quotes = await this.quoteService.findAll();
 
     if (quotes.length === 0)
@@ -134,17 +136,23 @@ export class QuoteHandler {
 
   @Command('adminAdd')
   async addQuote(@Ctx() ctx: MyContext) {
+    const isAdmin = this.isAdmin(ctx);
+    if (!isAdmin) return ctx.reply('Sizni bunga huquqingiz yoq!');
     await ctx.conversation.enter('createQuote');
   }
 
   @CallbackQuery('cancel')
   async declineQuote(@Ctx() ctx: MyContext) {
+    const isAdmin = this.isAdmin(ctx);
+    if (!isAdmin) return ctx.reply('Sizni bunga huquqingiz yoq!');
     ctx.answerCallbackQuery();
     ctx.deleteMessage();
     ctx.reply('✅Bekor qilindi');
   }
   @CallbackQuery('confirm')
   async acceptQoute(@Ctx() ctx: MyContext) {
+    const isAdmin = this.isAdmin(ctx);
+    if (!isAdmin) return ctx.reply('Sizni bunga huquqingiz yoq!');
     ctx.answerCallbackQuery();
     ctx.editMessageReplyMarkup();
     const text = await this.redis.get('text');
@@ -170,6 +178,14 @@ export class QuoteHandler {
     return await this.bot.api.sendMessage(chatId, msg, inlineKeys);
   }
 
+  isAdmin(ctx: MyContext) {
+    if (ctx.from?.id === +(process.env.ADMIN_ID as string)) {
+      return true;
+    } else {
+      false;
+    }
+  }
+
   async painationQuote(ctx: MyContext, reactions: LikesService) {
     const data = JSON.parse((await this.redis.get('data')) as string);
     const pages = +((await this.redis.get('pages')) as string);
@@ -182,7 +198,7 @@ export class QuoteHandler {
     let count = start;
     for (const i of data.slice(start, end)) {
       const likes = await reactions.findById(i.id);
-      qoutesAll += `<i>${count}.${i.text}</i>(👍 ${likes?.likesCount} likelar, 👎 ${likes?.dislikeCount} dislike)\n\n`;
+      qoutesAll += `<i>${count}.${i.text}</i>(👍 ${likes?.likesCount ? likes.likesCount : 0} likelar, 👎 ${likes?.dislikeCount ? likes.dislikeCount : 0} dislike)\n\n`;
       count++;
     }
 

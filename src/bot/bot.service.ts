@@ -3,7 +3,7 @@ import {
   ConversationControls,
   ConversationFlavor,
 } from '@grammyjs/conversations';
-import { Command, Ctx, Help, InjectBot, Update } from '@grammyjs/nestjs';
+import { Command, Ctx, InjectBot, Update } from '@grammyjs/nestjs';
 
 interface SessionData {
   text?: string;
