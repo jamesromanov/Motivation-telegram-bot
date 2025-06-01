@@ -43,7 +43,7 @@ export class QuoteHandler {
     );
   }
 
-  @Cron(CronExpression.EVERY_30_SECONDS)
+  @Cron(CronExpression.EVERY_DAY_AT_9AM)
   async scheduleMsg() {
     const randomQuote = await this.quoteService.findRandomQuote();
     if (!randomQuote)
