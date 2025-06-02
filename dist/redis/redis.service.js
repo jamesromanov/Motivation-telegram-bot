@@ -12,15 +12,12 @@ const ioredis_1 = require("ioredis");
 let RedisService = class RedisService {
     redis;
     onModuleInit() {
-        this.redis = new ioredis_1.default({
-            port: Number(process.env.REDIS_PORT),
-            host: process.env.REDIS_HOST,
-        });
+        this.redis = new ioredis_1.default(process.env.REDIS_URL);
         this.redis.on('connect', () => {
             console.log('Redis connected successfully');
         });
         this.redis.on('error', (err) => {
-            console.log('Redis connection error');
+            console.log('Redis connection error', err);
         });
     }
     async set(key, value) {

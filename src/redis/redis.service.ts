@@ -1,21 +1,19 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
+import { assert } from 'console';
 import Redis from 'ioredis';
 
 @Injectable()
 export class RedisService implements OnModuleInit {
   private redis: Redis;
   onModuleInit() {
-    this.redis = new Redis({
-      port: Number(process.env.REDIS_PORT),
-      host: process.env.REDIS_HOST,
-    });
+    this.redis = new Redis(process.env.REDIS_URL as string);
 
     this.redis.on('connect', () => {
       console.log('Redis connected successfully');
     });
 
     this.redis.on('error', (err) => {
-      console.log('Redis connection error');
+      console.log('Redis connection error', err);
     });
   }
 

@@ -4,6 +4,7 @@ import {
   ConversationFlavor,
 } from '@grammyjs/conversations';
 import { Command, Ctx, InjectBot, Update } from '@grammyjs/nestjs';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 interface SessionData {
   text?: string;

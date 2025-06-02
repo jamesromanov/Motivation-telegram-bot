@@ -14,6 +14,7 @@ const prisma_module_1 = require("./prisma/prisma.module");
 const users_module_1 = require("./users/users.module");
 const config_1 = require("@nestjs/config");
 const likes_module_1 = require("./likes/likes.module");
+const send__controller_1 = require("./send..controller");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -29,7 +30,7 @@ exports.AppModule = AppModule = __decorate([
             users_module_1.UsersModule,
             likes_module_1.LikesModule,
         ],
-        controllers: [],
+        controllers: [send__controller_1.Request],
         providers: [],
     })
 ], AppModule);
