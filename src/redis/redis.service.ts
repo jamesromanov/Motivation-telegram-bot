@@ -5,7 +5,10 @@ import Redis from 'ioredis';
 export class RedisService implements OnModuleInit {
   private redis: Redis;
   onModuleInit() {
-    this.redis = new Redis();
+    this.redis = new Redis({
+      port: Number(process.env.REDIS_PORT),
+      host: process.env.REDIS_HOST,
+    });
 
     this.redis.on('connect', () => {
       console.log('Redis connected successfully');
