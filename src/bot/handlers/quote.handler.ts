@@ -38,7 +38,7 @@ export class QuoteHandler {
       count++;
     }
     await ctx.reply(
-      `<b>✨Top ${topQuotes.length} motivatsiyalari:</b> \n\n${quotes}`,
+      `<b>✨Top ${topQuotes.length < 5 ? topQuotes.length : 5 } motivatsiyalari:</b> \n\n${quotes}`,
       {
         parse_mode: 'HTML',
       },
