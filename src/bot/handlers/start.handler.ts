@@ -16,8 +16,10 @@ export class StartHandler {
   async startBot(@Ctx() ctx: MyContext) {
     let id: number[] = JSON.parse((await this.redis.get('ids')) as string);
 
-    if (id && !id.includes(ctx.from?.id)) {
+    if (id) {
+      if(!id.includes(ctx.from?.id)){
       await this.redis.set('ids', id.concat(Number(ctx.from?.id)));
+      }
     }  else {
       await this.redis.set('ids', [ctx.from?.id]);
     }
